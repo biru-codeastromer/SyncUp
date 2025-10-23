@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Profile from "./components/Profile";
@@ -20,10 +21,38 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/edit" element={<EditProfile />} />
-          <Route path="/clubs" element={<Clubs />} />
-          <Route path="/feed" element={<Feed />} />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/profile/edit" 
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/clubs" 
+            element={
+              <ProtectedRoute>
+                <Clubs />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/feed" 
+            element={
+              <ProtectedRoute>
+                <Feed />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/" element={<Navigate to="/feed" replace />} />
         </Routes>
       </AuthProvider>

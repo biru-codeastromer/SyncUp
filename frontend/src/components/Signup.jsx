@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "./AuthLayout";
 import { supabase } from "../lib/supabaseClient";
+import { useAuth } from "./AuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -16,6 +18,13 @@ const Signup = () => {
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  // Redirect to feed if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/feed");
+    }
+  }, [user, navigate]);
 
   // handle input changes
   const handleChange = (e) => {
