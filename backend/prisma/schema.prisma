@@ -43,6 +43,7 @@ model Post {
   image_url   String?
   visibility  Visibility
   created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 
   // Relations
   user        User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
@@ -74,6 +75,7 @@ model Comment {
   post_id    Int
   content    String
   created_at DateTime @default(now())
+  updated_at DateTime  @updatedAt
 
   // Relations
   user       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
@@ -88,6 +90,7 @@ model Club {
   description String
   created_by  Int
   created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 
   // Relations
   creator     User      @relation(fields: [created_by], references: [user_id], onDelete: Cascade)
