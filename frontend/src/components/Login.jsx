@@ -1,12 +1,17 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
 import "../index.css";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,10 +21,33 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login form submitted:", formData);
-    // Add your login logic here
+    setLoading(true);
+    setError("");
+
+    try {
+      const { data, error: loginError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (loginError) {
+        setError(loginError.message);
+        setLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        console.log("Login successful:", data.user);
+        navigate("/feed");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,6 +59,8 @@ const Login = () => {
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
+          {error && <p className="error-message" style={{ gridColumn: '1 / -1', color: '#ff6b6b', fontSize: '14px', marginBottom: '10px' }}>{error}</p>}
+          
           <div className="form-group">
             <label htmlFor="email" className="form-label">
               Email address
@@ -70,8 +100,8 @@ const Login = () => {
             </div>
       
 
-          <button type="submit" className="auth-button">
-            Sign in
+          <button type="submit" className="auth-button" disabled={loading}>
+            {loading ? "Signing in..." : "Sign in"}
           </button>
 
           <div className="auth-link">

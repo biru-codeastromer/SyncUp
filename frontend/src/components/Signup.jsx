@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import "../index.css";
+import { Link, useNavigate } from "react-router-dom";
+import AuthLayout from "./AuthLayout";
+import { supabase } from "../lib/supabaseClient";
 
 const Signup = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -12,15 +15,15 @@ const Signup = () => {
   });
 
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
+  // handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // password validation
   const validatePassword = (password, confirmPassword) => {
     if (password.length < 6) {
       return "Password must be at least 6 characters long.";
@@ -31,28 +34,49 @@ const Signup = () => {
     return "";
   };
 
-  const handleSubmit = (e) => {
+  // signup function
+  const handleSignup = async (e) => {
     e.preventDefault();
+    setError("");
+    setMessage("");
+
     const validationError = validatePassword(formData.password, formData.confirmPassword);
     if (validationError) {
       setError(validationError);
       return;
     }
-    setError("");
-    console.log("Signup form submitted:", formData);
-    // Add your signup logic here (API call etc.)
+
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          full_name: `${formData.firstName} ${formData.lastName}`,
+        },
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      setMessage("Signup successful! Redirecting to feed...");
+      setTimeout(() => navigate("/feed"), 2000);
+    }
   };
 
   return (
-    <div className="auth-container">
+    <AuthLayout>
       <div className="auth-card">
         <div className="auth-header">
           <h2 className="auth-title">Create Account</h2>
           <p className="auth-subtitle">Join us today and get started</p>
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <form className="auth-form" onSubmit={handleSignup}>
           {error && <p className="error-message">{error}</p>}
+          {message && <p className="success-message">{message}</p>}
 
           <div className="form-group">
             <label htmlFor="firstName" className="form-label">First Name</label>
@@ -133,10 +157,13 @@ const Signup = () => {
             <p className="auth-link-text">
               Already have an account? <Link to="/login">Sign in here</Link>
             </p>
+            <p className="auth-link-text">
+              <Link to="/clubs">Browse Clubs</Link> • <Link to="/feed">View Feed</Link> • <Link to="/profile">View Demo Profile</Link>
+            </p>
           </div>
         </form>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 
