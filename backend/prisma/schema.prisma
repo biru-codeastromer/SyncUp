@@ -5,10 +5,170 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id        Int       @id @default(autoincrement())
+  name           String
+  email          String    @unique
+  password_hash  String
+  profile_pic_url String?
+  bio            String?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  // Relations
+  posts          Post[]
+  likes          Like[]
+  comments       Comment[]
+  clubs_created  Club[]
+  memberships    Membership[]
+  notifications  Notification[]
+
+  @@map("users")
+}
+
+model Post {
+  post_id     Int       @id @default(autoincrement())
+  user_id     Int
+  club_id     Int?
+  content     String
+  image_url   String?
+  visibility  Visibility
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  // Relations
+  user        User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  club        Club?     @relation(fields: [club_id], references: [club_id], onDelete: Cascade)
+  likes       Like[]
+  comments    Comment[]
+  images      ImageStorage[]
+
+  @@map("posts")
+}
+
+model Like {
+  like_id    Int      @id @default(autoincrement())
+  user_id    Int
+  post_id    Int
+  created_at DateTime @default(now())
+
+  // Relations
+  user       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  post       Post     @relation(fields: [post_id], references: [post_id], onDelete: Cascade)
+
+  @@unique([user_id, post_id])
+  @@map("likes")
+}
+
+model Comment {
+  comment_id Int      @id @default(autoincrement())
+  user_id    Int
+  post_id    Int
+  content    String
+  created_at DateTime @default(now())
+  updated_at DateTime  @updatedAt
+
+  // Relations
+  user       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  post       Post     @relation(fields: [post_id], references: [post_id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model Club {
+  club_id     Int       @id @default(autoincrement())
+  name        String
+  description String
+  created_by  Int
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  // Relations
+  creator     User      @relation(fields: [created_by], references: [user_id], onDelete: Cascade)
+  posts       Post[]
+  memberships Membership[]
+  events      Event[]
+
+  @@map("clubs")
+}
+
+model Membership {
+  membership_id Int       @id @default(autoincrement())
+  user_id       Int
+  club_id       Int
+  role          MembershipRole
+  joined_at     DateTime  @default(now())
+
+  // Relations
+  user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  club          Club     @relation(fields: [club_id], references: [club_id], onDelete: Cascade)
+
+  @@unique([user_id, club_id])
+  @@map("memberships")
+}
+
+model ImageStorage {
+  image_id    Int      @id @default(autoincrement())
+  post_id     Int
+  image_url   String
+  uploaded_at DateTime @default(now())
+
+  // Relations
+  post        Post     @relation(fields: [post_id], references: [post_id], onDelete: Cascade)
+
+  @@map("image_storage")
+}
+
+model Notification {
+  notification_id Int              @id @default(autoincrement())
+  user_id         Int
+  type            NotificationType
+  reference_id    Int
+  message         String
+  created_at      DateTime         @default(now())
+  read_status     Boolean          @default(false)
+
+  // Relations
+  user            User             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Event {
+  event_id    Int      @id @default(autoincrement())
+  club_id     Int
+  title       String
+  description String
+  event_date  DateTime
+  created_at  DateTime @default(now())
+
+  // Relations
+  club        Club     @relation(fields: [club_id], references: [club_id], onDelete: Cascade)
+
+  @@map("events")
+}
+
+enum Visibility {
+  public
+  club_only
+}
+
+enum MembershipRole {
+  member
+  admin
+}
+
+enum NotificationType {
+  like
+  comment
+  membership
 }
