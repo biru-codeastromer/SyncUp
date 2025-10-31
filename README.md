@@ -123,7 +123,6 @@ erDiagram
         Int user_id FK
         Int post_id FK
         DateTime created_at
-        UK(user_id, post_id)
     }
 
     comments {
@@ -150,7 +149,6 @@ erDiagram
         Int club_id FK
         String role
         DateTime joined_at
-        UK(user_id, club_id)
     }
 
     image_storage {
