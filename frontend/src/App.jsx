@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -10,7 +9,7 @@ import Signup from "./components/Signup";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { useAuth } from "./context/AuthContext";
 
 function RootRedirect() {
   const { user } = useAuth();
@@ -19,31 +18,25 @@ function RootRedirect() {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+    <Routes>
+      {/* Public routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-          {/* Protected routes */}
-          <Route 
-            path="/" 
-            element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }
-          >
-            {/* Nested routes will render inside MainLayout's <Outlet /> */}
-            <Route path="dashboard" element={<Dashboard />} />
-          </Route>
+      {/* Protected routes */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Route>
 
-          {/* Root redirect */}
-          <Route path="/" element={<RootRedirect />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+      {/* The root path "/" will always redirect */}
+      <Route path="/" element={<RootRedirect />} />
+    </Routes>
   );
 }
 
