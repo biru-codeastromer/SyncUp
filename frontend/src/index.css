@@ -449,3 +449,17 @@ code {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #5a67d8, #6b46c1);
 }
+
+/* --- Main Layout Styles --- */
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* --- Responsive for Layout --- */
+@media (max-width: 768px) {
+  .content-container {
+    padding: 1rem;
+  }
+}

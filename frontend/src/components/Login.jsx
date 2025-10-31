@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../index.css";
 
 const Login = () => {
@@ -7,6 +8,14 @@ const Login = () => {
     email: "",
     password: "",
   });
+  
+  const { login, loading, error, setError } = useAuth();
+
+  useEffect(() => {
+    return () => {
+      setError("");
+    };
+  }, [setError]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,8 +27,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Login form submitted:", formData);
-    // Add your login logic here
+    login(formData.email, formData.password);
   };
 
   return (
@@ -31,7 +39,8 @@ const Login = () => {
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
+          {error && <p className="error-message">{error}</p>}
+          <div className="form-group" style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="email" className="form-label">
               Email address
             </label>
@@ -48,7 +57,7 @@ const Login = () => {
             />
           </div>
 
-          <div className="form-group">
+          <div className="form-group" style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="password" className="form-label">
               Password
             </label>
@@ -70,8 +79,8 @@ const Login = () => {
             </div>
       
 
-          <button type="submit" className="auth-button">
-            Sign in
+          <button type="submit" className="auth-button" disabled={loading}>
+            {loading ? "Signing In..." : "Sign in"}
           </button>
 
           <div className="auth-link">
