@@ -12,7 +12,7 @@ SyncUp solves this by providing a one-stop-shop for campus engagement. It's a fu
 * **Database/ORM:** Prisma, MySQL/Supabase
 
 ### Team Members & Roles
-*(Please fill this in with your group members)*
+
 * **Sakina:** Full-Project Lead
 * **Birajit:** Backend/Database Lead
 * **Hemant:** Frontend Lead
