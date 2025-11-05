@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./MockAuthContext";
 import "../index.css";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signIn } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,6 +20,15 @@ const Login = () => {
       navigate("/feed");
     }
   }, [user, navigate]);
+  
+  // Mock user for demo purposes
+  useEffect(() => {
+    // Auto-fill demo credentials
+    setFormData({
+      email: "demo@example.com",
+      password: "password123"
+    });
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,19 +44,23 @@ const Login = () => {
     setError("");
 
     try {
-      const { data, error: loginError } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      if (loginError) {
-        setError(loginError.message);
+      // Validate inputs
+      if (!formData.email || !formData.password) {
+        setError("Please enter both email and password");
         setLoading(false);
         return;
       }
 
-      if (data.user) {
-        console.log("Login successful:", data.user);
+      // Call the signIn function from MockAuthContext
+      const { user: loggedInUser, error: signInError } = await signIn(formData.email, formData.password);
+
+      if (signInError) {
+        setError(signInError.message || "Failed to sign in");
+        return;
+      }
+
+      if (loggedInUser) {
+        console.log("Login successful:", loggedInUser);
         navigate("/feed");
       }
     } catch (err) {
@@ -65,6 +77,25 @@ const Login = () => {
         <div className="auth-header">
           <h2 className="auth-title">Welcome Back</h2>
           <p className="auth-subtitle">Sign in to your account to continue</p>
+        </div>
+
+        {/* Demo Credentials Info */}
+        <div style={{
+          background: 'rgba(99, 102, 241, 0.1)',
+          border: '1px solid rgba(99, 102, 241, 0.3)',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '20px'
+        }}>
+          <p style={{ fontSize: '13px', color: '#a5b4fc', marginBottom: '6px', fontWeight: '500' }}>
+            🎯 Demo Credentials (Pre-filled)
+          </p>
+          <p style={{ fontSize: '12px', color: '#c7d2fe', marginBottom: '2px' }}>
+            <strong>Email:</strong> demo@example.com
+          </p>
+          <p style={{ fontSize: '12px', color: '#c7d2fe' }}>
+            <strong>Password:</strong> password123
+          </p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>

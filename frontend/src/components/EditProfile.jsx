@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "./Layout";
-import { useAuth } from "./AuthContext";
-import { supabase } from "../lib/supabaseClient";
+import { useAuth } from "./MockAuthContext";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -27,69 +26,53 @@ const EditProfile = () => {
   // Avatar preview
   const [avatarPreview, setAvatarPreview] = useState("");
 
-  // Fetch user profile and clubs on mount
+  // Load mock data on mount
   useEffect(() => {
     if (user) {
-      fetchProfile();
-      fetchClubs();
-      fetchUserClubs();
+      // Mock clubs data
+      const mockClubs = [
+        {
+          id: 1,
+          name: 'Coding Club',
+          description: 'A club for coding enthusiasts',
+          icon: '💻'
+        },
+        {
+          id: 2,
+          name: 'Art Collective',
+          description: 'Express yourself through art',
+          icon: '🎨'
+        },
+        {
+          id: 3,
+          name: 'Debate Society',
+          description: 'Sharpen your public speaking skills',
+          icon: '🎤'
+        },
+        {
+          id: 4,
+          name: 'Music Club',
+          description: 'For music lovers and musicians',
+          icon: '🎵'
+        }
+      ];
+      
+      // Set form data from user metadata
+      setFormData({
+        full_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || "",
+        bio: user?.user_metadata?.bio || "",
+        title: user?.user_metadata?.title || "",
+        avatar_url: user?.user_metadata?.avatar_url || "",
+      });
+      setAvatarPreview(user?.user_metadata?.avatar_url || "");
+      
+      // Set mock clubs
+      setAllClubs(mockClubs);
+      
+      // Set mock selected clubs (user is member of first 2 clubs)
+      setSelectedClubs([1, 2]);
     }
   }, [user]);
-
-  const fetchProfile = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (error && error.code !== "PGRST116") {
-        // PGRST116 = no rows returned
-        console.error("Error fetching profile:", error);
-      }
-
-      if (data) {
-        setFormData({
-          full_name: data.full_name || "",
-          bio: data.bio || "",
-          title: data.title || "",
-          avatar_url: data.avatar_url || "",
-        });
-        setAvatarPreview(data.avatar_url || "");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-    }
-  };
-
-  const fetchClubs = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("clubs")
-        .select("*")
-        .order("name");
-
-      if (error) throw error;
-      setAllClubs(data || []);
-    } catch (err) {
-      console.error("Error fetching clubs:", err);
-    }
-  };
-
-  const fetchUserClubs = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("club_memberships")
-        .select("club_id")
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-      setSelectedClubs(data?.map((m) => m.club_id) || []);
-    } catch (err) {
-      console.error("Error fetching user clubs:", err);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -115,41 +98,31 @@ const EditProfile = () => {
       // Validate file type
       if (!file.type.startsWith("image/")) {
         setError("Please upload an image file");
+        setUploading(false);
         return;
       }
 
       // Validate file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
         setError("Image size should be less than 2MB");
+        setUploading(false);
         return;
       }
 
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
-
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-
-      const publicUrl = urlData.publicUrl;
-
-      setFormData((prev) => ({ ...prev, avatar_url: publicUrl }));
-      setAvatarPreview(publicUrl);
-      setMessage("Avatar uploaded successfully!");
-      setTimeout(() => setMessage(""), 3000);
+      // Mock upload - create a local preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const publicUrl = reader.result;
+        setFormData((prev) => ({ ...prev, avatar_url: publicUrl }));
+        setAvatarPreview(publicUrl);
+        setMessage("Avatar uploaded successfully!");
+        setTimeout(() => setMessage(""), 3000);
+        setUploading(false);
+      };
+      reader.readAsDataURL(file);
     } catch (err) {
       console.error("Error uploading avatar:", err);
       setError("Failed to upload avatar");
-    } finally {
       setUploading(false);
     }
   };
@@ -161,52 +134,17 @@ const EditProfile = () => {
     setMessage("");
 
     try {
-      // Update profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .upsert({
-          id: user.id,
-          full_name: formData.full_name,
-          bio: formData.bio,
-          title: formData.title,
-          avatar_url: formData.avatar_url,
-          updated_at: new Date().toISOString(),
-        });
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (profileError) throw profileError;
-
-      // Update club memberships
-      // First, delete all existing memberships
-      await supabase
-        .from("club_memberships")
-        .delete()
-        .eq("user_id", user.id);
-
-      // Then, insert new memberships
-      if (selectedClubs.length > 0) {
-        const memberships = selectedClubs.map((clubId) => ({
-          user_id: user.id,
-          club_id: clubId,
-        }));
-
-        const { error: membershipError } = await supabase
-          .from("club_memberships")
-          .insert(memberships);
-
-        if (membershipError) throw membershipError;
-      }
-
-      // Update auth metadata
-      const { error: authError } = await supabase.auth.updateUser({
-        data: {
-          full_name: formData.full_name,
-          avatar_url: formData.avatar_url,
-          bio: formData.bio,
-          title: formData.title,
-        },
+      // In a real app, this would update the backend
+      console.log("Profile update data:", {
+        full_name: formData.full_name,
+        bio: formData.bio,
+        title: formData.title,
+        avatar_url: formData.avatar_url,
+        selectedClubs: selectedClubs
       });
-
-      if (authError) throw authError;
 
       setMessage("Profile updated successfully!");
       setTimeout(() => navigate("/profile"), 2000);

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "./AuthLayout";
-import { supabase } from "../lib/supabaseClient";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./MockAuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -18,6 +17,7 @@ const Signup = () => {
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Redirect to feed if already logged in
   useEffect(() => {
@@ -25,6 +25,17 @@ const Signup = () => {
       navigate("/feed");
     }
   }, [user, navigate]);
+  
+  // Auto-fill demo data for testing
+  useEffect(() => {
+    setFormData({
+      firstName: "Demo",
+      lastName: "User",
+      email: "demo@example.com",
+      password: "password123",
+      confirmPassword: "password123"
+    });
+  }, []);
 
   // handle input changes
   const handleChange = (e) => {
@@ -48,30 +59,36 @@ const Signup = () => {
     e.preventDefault();
     setError("");
     setMessage("");
-
-    const validationError = validatePassword(formData.password, formData.confirmPassword);
-    if (validationError) {
-      setError(validationError);
+    
+    // Validate input
+    if (!formData.firstName || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError("Please fill in all required fields");
       return;
     }
-
-    const { data, error } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.password,
-      options: {
-        data: {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          full_name: `${formData.firstName} ${formData.lastName}`,
-        },
-      },
-    });
-
-    if (error) {
-      setError(error.message);
-    } else {
-      setMessage("Signup successful! Redirecting to feed...");
-      setTimeout(() => navigate("/feed"), 2000);
+    
+    const passwordError = validatePassword(formData.password, formData.confirmPassword);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // In a real app, you would call your signup API here
+      // For demo, we'll just redirect to login
+      setMessage("Signup successful! Redirecting to login...");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+      
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError("An error occurred during signup. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 

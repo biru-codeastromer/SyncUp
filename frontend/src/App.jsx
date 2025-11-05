@@ -5,7 +5,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider } from "./components/AuthContext";
+import { AuthProvider } from "./components/MockAuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -13,6 +13,7 @@ import Profile from "./components/Profile";
 import EditProfile from "./components/EditProfile";
 import Clubs from "./components/Clubs";
 import Feed from "./components/Feed";
+import Events from "./components/Events";
 
 function App() {
   return (
@@ -50,6 +51,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Feed />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/events" 
+            element={
+              <ProtectedRoute>
+                <Events />
               </ProtectedRoute>
             } 
           />

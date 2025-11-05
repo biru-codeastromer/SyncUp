@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from './Layout';
-import { useAuth } from './AuthContext';
+import { useAuth } from './MockAuthContext';
 
 const Feed = () => {
   const [filter, setFilter] = useState('all');
