@@ -43,6 +43,7 @@ const Header = () => {
   const userAvatar = user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=6366f1&color=fff&size=150`;
 
   return (
+    <>
     <header className="header">
       <div className="header-container">
         <div className="header-brand">
@@ -105,6 +106,13 @@ const Header = () => {
           </ul>
         </nav>
 
+      <div 
+        className={`dark-mode-toggle ${isDarkMode ? 'dark' : ''}`} 
+        onClick={toggleDarkMode}
+        style={{padding: '5px'}}
+      >
+        <div className="toggle-ball" />
+      </div>
         <div className="header-auth">
           {user ? (
             <>      
@@ -127,6 +135,7 @@ const Header = () => {
               </button>
               
               {isProfileOpen && (
+                
                 <div className="profile-dropdown">
                   <div className="dropdown-header">
                     <img src={userAvatar} alt={userName} className="dropdown-avatar" />
@@ -182,6 +191,7 @@ const Header = () => {
         </button>
       </div>
     </header>
+    </>
   );
 };
 

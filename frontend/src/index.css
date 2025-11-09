@@ -2,7 +2,7 @@
 .dark-mode-toggle {
   position: relative;
   width: 100px;
-  height: 50px;
+  height: 40px;
   background: #ddd;
   border-radius: 30px;
   cursor: pointer;
@@ -18,13 +18,13 @@
 
 .dark-mode-toggle::before {
   content: "🌞";
-  font-size: 30px;
+  font-size: 25px;
   position: absolute;
   top: 50%;
   left: 5px;
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   background: white;
   border-radius: 50%;
   display: flex;
