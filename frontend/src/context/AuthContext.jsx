@@ -2,7 +2,9 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:5000";
+// Use port 5001 because macOS may reserve port 5000 for system services (AirPlay/Control Center).
+// You can also set REACT_APP_API_URL in your environment to override this.
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);

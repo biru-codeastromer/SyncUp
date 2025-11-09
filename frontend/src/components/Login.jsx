@@ -1,27 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "./MockAuthContext";
+import { useAuth } from "../context/AuthContext";
 
 import "../index.css";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { user, signIn } = useAuth();
+  const { user, login, loading, error, setError } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   
-  const { login, loading, error, setError } = useAuth();
+  
 
   useEffect(() => {
     return () => {
       setError("");
     };
   }, [setError]);
-
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   // Redirect to feed if already logged in
   useEffect(() => {
@@ -49,34 +46,23 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+  // use context's loading/error
+  setError("");
 
     try {
       // Validate inputs
       if (!formData.email || !formData.password) {
         setError("Please enter both email and password");
-        setLoading(false);
         return;
       }
 
-      // Call the signIn function from MockAuthContext
-      const { user: loggedInUser, error: signInError } = await signIn(formData.email, formData.password);
-
-      if (signInError) {
-        setError(signInError.message || "Failed to sign in");
-        return;
-      }
-
-      if (loggedInUser) {
-        console.log("Login successful:", loggedInUser);
-        navigate("/feed");
-      }
+      // Call the login function from AuthContext
+      await login(formData.email, formData.password);
     } catch (err) {
       console.error("Login error:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
-      setLoading(false);
+      // loading is managed by AuthContext
     }
   };
 
