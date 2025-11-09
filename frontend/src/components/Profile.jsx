@@ -96,163 +96,84 @@ const Profile = () => {
 
   return (
     <Layout>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }}>
-        {/* Profile Header */}
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.04)',
-          backdropFilter: 'blur(20px)',
-          borderRadius: '16px',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          padding: '32px',
-          marginBottom: '24px'
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', width: '100%' }}>
-              <img
-                src={user.avatar}
-                alt={user.name}
-                style={{
-                  width: '120px',
-                  height: '120px',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  border: '4px solid rgba(99, 102, 241, 0.3)'
-                }}
-              />
-              <div style={{ textAlign: 'center' }}>
-                <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#fff', marginBottom: '8px' }}>
-                  {user.name}
-                </h1>
-                <p style={{ color: '#a5b4fc', fontSize: '16px', fontWeight: '500', marginBottom: '8px' }}>
-                  {user.title}
-                </p>
-                <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px', maxWidth: '600px', margin: '0 auto' }}>
-                  {user.bio}
-                </p>
+      <div className="profile-page-wrapper">
+        <div className="profile-container">
+          {/* Profile Header */}
+          <div className="profile-header-card">
+            <div className="profile-header-content">
+              <div className="profile-header-main">
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="profile-avatar-img"
+                />
+                <div className="profile-header-text">
+                  <h1 className="profile-name-text">
+                    {user.name}
+                  </h1>
+                  <p className="profile-title-text">
+                    {user.title}
+                  </p>
+                  <p className="profile-bio-text">
+                    {user.bio}
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate("/profile/edit")}
+                  className="profile-edit-button"
+                >
+                  Edit Profile
+                </button>
               </div>
-              <button
-                onClick={() => navigate("/profile/edit")}
-                style={{
-                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '12px 32px',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  marginTop: '8px'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-              >
-                Edit Profile
-              </button>
             </div>
           </div>
-        </div>
 
         {/* Tabs */}
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.04)',
-          backdropFilter: 'blur(20px)',
-          borderRadius: '16px',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          overflow: 'hidden',
-          marginBottom: '24px'
-        }}>
-          <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <div className="profile-tabs-card">
+          <div className="profile-tabs-header">
             <button
               onClick={() => setActiveTab('clubs')}
-              style={{
-                padding: '16px 24px',
-                background: activeTab === 'clubs' ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
-                color: activeTab === 'clubs' ? '#6366f1' : 'rgba(255, 255, 255, 0.6)',
-                border: 'none',
-                borderBottom: activeTab === 'clubs' ? '2px solid #6366f1' : 'none',
-                fontWeight: activeTab === 'clubs' ? '600' : '400',
-                fontSize: '14px',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
+              className={`profile-tab-button ${activeTab === 'clubs' ? 'active' : ''}`}
             >
               My Clubs
             </button>
             <button
               onClick={() => setActiveTab('posts')}
-              style={{
-                padding: '16px 24px',
-                background: activeTab === 'posts' ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
-                color: activeTab === 'posts' ? '#6366f1' : 'rgba(255, 255, 255, 0.6)',
-                border: 'none',
-                borderBottom: activeTab === 'posts' ? '2px solid #6366f1' : 'none',
-                fontWeight: activeTab === 'posts' ? '600' : '400',
-                fontSize: '14px',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
+              className={`profile-tab-button ${activeTab === 'posts' ? 'active' : ''}`}
             >
               My Posts
             </button>
           </div>
 
           {/* Tab Content */}
-          <div style={{ padding: '24px' }}>
+          <div className="profile-tab-content">
             {activeTab === 'clubs' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+              <div className="profile-clubs-grid">
                 {clubs.length > 0 ? (
                   clubs.map((club) => (
                     <div
                       key={club.id}
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '12px',
-                        padding: '20px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '16px',
-                        transition: 'all 0.2s',
-                        cursor: 'pointer'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
-                        e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.5)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                      }}
+                      className="profile-club-card"
+                      onClick={() => navigate(`/clubs/${club.id}`)}
                     >
                       <img
                         src={club.logo_url}
                         alt={club.name}
-                        style={{
-                          width: '64px',
-                          height: '64px',
-                          objectFit: 'cover',
-                          borderRadius: '12px'
-                        }}
+                        className="profile-club-logo"
                       />
-                      <div style={{ flex: 1 }}>
-                        <h3 style={{ fontWeight: '600', fontSize: '16px', color: '#fff', marginBottom: '4px' }}>
+                      <div className="profile-club-info">
+                        <h3 className="profile-club-name">
                           {club.name}
                         </h3>
-                        <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '13px', marginBottom: '8px' }}>
+                        <p className="profile-club-description">
                           {club.description}
                         </p>
                         <button
-                          onClick={() => navigate(`/clubs/${club.id}`)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#6366f1',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            cursor: 'pointer',
-                            padding: 0
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/clubs/${club.id}`);
                           }}
+                          className="profile-club-view-btn"
                         >
                           View Club →
                         </button>
@@ -260,7 +181,7 @@ const Profile = () => {
                     </div>
                   ))
                 ) : (
-                  <p style={{ color: 'rgba(255, 255, 255, 0.6)', textAlign: 'center', padding: '40px' }}>
+                  <p className="profile-empty-message">
                     You haven't joined any clubs yet.
                   </p>
                 )}
@@ -268,49 +189,39 @@ const Profile = () => {
             )}
 
             {activeTab === 'posts' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="profile-posts-list">
                 {posts.length > 0 ? (
                   posts.map((post) => (
                     <div
                       key={post.id}
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '12px',
-                        padding: '20px'
-                      }}
+                      className="profile-post-card"
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+                      <div className="profile-post-header">
                         <img
                           src={post.user_avatar}
                           alt={post.user_name}
-                          style={{
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: '50%',
-                            marginRight: '12px'
-                          }}
+                          className="profile-post-avatar"
                         />
-                        <div>
-                          <p style={{ fontWeight: '600', color: '#fff', fontSize: '14px' }}>
+                        <div className="profile-post-user-info">
+                          <p className="profile-post-user-name">
                             {post.user_name}
                           </p>
-                          <p style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)' }}>
+                          <p className="profile-post-time">
                             {formatDate(post.created_at)}
                           </p>
                         </div>
                       </div>
-                      <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '16px', lineHeight: '1.5' }}>
+                      <p className="profile-post-content">
                         {post.content}
                       </p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', color: 'rgba(255, 255, 255, 0.5)', fontSize: '14px' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div className="profile-post-stats">
+                        <span className="profile-post-stat">
                           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                           </svg>
                           {post.likes}
                         </span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="profile-post-stat">
                           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                           </svg>
@@ -320,7 +231,7 @@ const Profile = () => {
                     </div>
                   ))
                 ) : (
-                  <p style={{ color: 'rgba(255, 255, 255, 0.6)', textAlign: 'center', padding: '40px' }}>
+                  <p className="profile-empty-message">
                     You haven't made any posts yet.
                   </p>
                 )}
@@ -329,6 +240,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
+    </div>
     </Layout>
   );
 };

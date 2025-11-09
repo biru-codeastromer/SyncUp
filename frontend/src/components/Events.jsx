@@ -154,180 +154,107 @@ const Events = () => {
 
   return (
     <Layout>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }}>
-        {/* Header */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#fff', marginBottom: '8px' }}>
-            Campus Events
-          </h1>
-          <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '16px' }}>
-            Discover and join exciting events happening on campus
-          </p>
-        </div>
+      <div className="events-page">
+        <div className="events-container">
+          {/* Header */}
+          <div className="events-header">
+            <h1 className="events-title">
+              Campus Events
+            </h1>
+            <p className="events-subtitle">
+              Discover and join exciting events happening on campus
+            </p>
+          </div>
 
         {/* Filter Tabs */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '12px', 
-          marginBottom: '32px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          paddingBottom: '12px'
-        }}>
+        <div className="events-filters">
           <button
             onClick={() => setFilter('all')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '8px',
-              border: 'none',
-              background: filter === 'all' ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-              color: filter === 'all' ? '#6366f1' : 'rgba(255, 255, 255, 0.6)',
-              fontWeight: filter === 'all' ? '600' : '400',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
+            className={`events-filter-btn ${filter === 'all' ? 'active' : ''}`}
           >
             All Events
           </button>
           <button
             onClick={() => setFilter('upcoming')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '8px',
-              border: 'none',
-              background: filter === 'upcoming' ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-              color: filter === 'upcoming' ? '#6366f1' : 'rgba(255, 255, 255, 0.6)',
-              fontWeight: filter === 'upcoming' ? '600' : '400',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
+            className={`events-filter-btn ${filter === 'upcoming' ? 'active' : ''}`}
           >
             Upcoming
           </button>
           <button
             onClick={() => setFilter('past')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '8px',
-              border: 'none',
-              background: filter === 'past' ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-              color: filter === 'past' ? '#6366f1' : 'rgba(255, 255, 255, 0.6)',
-              fontWeight: filter === 'past' ? '600' : '400',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
+            className={`events-filter-btn ${filter === 'past' ? 'active' : ''}`}
           >
             Past Events
           </button>
         </div>
 
         {/* Events Grid */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
-          gap: '24px' 
-        }}>
+        <div className="events-grid">
           {filteredEvents.map((event) => (
             <div
               key={event.id}
-              style={{
-                background: 'rgba(255, 255, 255, 0.04)',
-                backdropFilter: 'blur(20px)',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                transition: 'all 0.3s',
-                cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.5)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-              }}
+              className="event-card"
             >
               {/* Event Image */}
-              <div style={{ position: 'relative', height: '200px', overflow: 'hidden' }}>
+              <div className="event-image-container">
                 <img
                   src={event.image_url}
                   alt={event.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  className="event-image"
                 />
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  right: '12px'
-                }}>
+                <div className="event-status-badge">
                   {getStatusBadge(event.status)}
                 </div>
               </div>
 
               {/* Event Content */}
-              <div style={{ padding: '20px' }}>
+              <div className="event-content">
                 {/* Club Info */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '20px' }}>{event.club_icon}</span>
-                  <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>
+                <div className="event-club-info">
+                  <span className="event-club-icon">{event.club_icon}</span>
+                  <span className="event-club-name">
                     {event.club_name}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h3 style={{ 
-                  fontSize: '20px', 
-                  fontWeight: '600', 
-                  color: '#fff', 
-                  marginBottom: '8px',
-                  lineHeight: '1.3'
-                }}>
+                <h3 className="event-title">
                   {event.title}
                 </h3>
 
                 {/* Description */}
-                <p style={{ 
-                  color: 'rgba(255, 255, 255, 0.6)', 
-                  fontSize: '14px', 
-                  marginBottom: '16px',
-                  lineHeight: '1.5'
-                }}>
+                <p className="event-description">
                   {event.description}
                 </p>
 
                 {/* Event Details */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '16px' }}>📅</span>
-                    <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
+                <div className="event-details">
+                  <div className="event-detail-item">
+                    <span className="event-detail-icon">📅</span>
+                    <span className="event-detail-text">
                       {formatDate(event.date)}
                     </span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '16px' }}>🕐</span>
-                    <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
+                  <div className="event-detail-item">
+                    <span className="event-detail-icon">🕐</span>
+                    <span className="event-detail-text">
                       {event.time}
                     </span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '16px' }}>📍</span>
-                    <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
+                  <div className="event-detail-item">
+                    <span className="event-detail-icon">📍</span>
+                    <span className="event-detail-text">
                       {event.location}
                     </span>
                   </div>
                 </div>
 
                 {/* Tags */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                <div className="event-tags">
                   {event.tags.map((tag, index) => (
                     <span
                       key={index}
-                      style={{
-                        background: 'rgba(99, 102, 241, 0.1)',
-                        color: '#a5b4fc',
-                        padding: '4px 10px',
-                        borderRadius: '6px',
-                        fontSize: '12px'
-                      }}
+                      className="event-tag"
                     >
                       {tag}
                     </span>
@@ -335,31 +262,15 @@ const Events = () => {
                 </div>
 
                 {/* Attendees & Action */}
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  paddingTop: '16px',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '16px' }}>👥</span>
-                    <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>
+                <div className="event-footer">
+                  <div className="event-attendees">
+                    <span className="event-attendees-icon">👥</span>
+                    <span className="event-attendees-text">
                       {event.attendees}/{event.max_attendees}
                     </span>
                   </div>
                   <button
-                    style={{
-                      background: event.status === 'upcoming' ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' : 'rgba(156, 163, 175, 0.2)',
-                      color: '#fff',
-                      border: 'none',
-                      padding: '8px 20px',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      cursor: event.status === 'upcoming' ? 'pointer' : 'not-allowed',
-                      transition: 'all 0.2s'
-                    }}
+                    className={`event-register-btn ${event.status === 'past' ? 'disabled' : ''}`}
                     disabled={event.status === 'past'}
                   >
                     {event.status === 'upcoming' ? 'Register' : 'Ended'}
@@ -372,14 +283,11 @@ const Events = () => {
 
         {/* No Events Message */}
         {filteredEvents.length === 0 && (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '60px 20px',
-            color: 'rgba(255, 255, 255, 0.6)'
-          }}>
-            <p style={{ fontSize: '18px' }}>No {filter} events found</p>
+          <div className="events-empty">
+            <p>No {filter} events found</p>
           </div>
         )}
+        </div>
       </div>
     </Layout>
   );

@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './MockAuthContext';
+import 'remixicon/fonts/remixicon.css'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -14,6 +17,18 @@ const Header = () => {
 
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
+  };
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+    localStorage.setItem('darkMode', newDarkMode.toString());
+    
+    if (newDarkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
   };
 
   const handleLogout = async () => {
@@ -68,11 +83,7 @@ const Header = () => {
             <li className="nav-item">
               <Link to="/clubs" className="nav-link">
                 <span className="nav-icon">
-                  <img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCg8Ey4i_89l7PlDEpdkQHaieSu4NzApKkMRh964V3oBfGMeST9DJZccypScDDqUNLDEk&usqp=CAU"
-                    alt="Discover"
-                    className="w-5 h-5 color-white"
-                  />
+                  <i class="ri-lightbulb-line"></i>
                 </span>
                 <span>Discover</span>
               </Link>
@@ -80,18 +91,14 @@ const Header = () => {
             <li className="nav-item">
               <Link to="/events" className="nav-link">
                 <span className="nav-icon">
-                  <img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNFlsqCnDVNql4ymcIUSLYOjWUnAB1RTq2Wg&s"
-                    alt="Events"
-                    className="w-5 h-5"
-                  />
+                   <i class="ri-calendar-line"></i>
                 </span>
                 <span>Events</span>
               </Link>
             </li>
             <li className="nav-item">
               <Link to="/profile" className="nav-link">
-                <span className="nav-icon">👤</span>
+                <i class="ri-user-3-line"></i>
                 <span>Profile</span>
               </Link>
             </li>
@@ -100,8 +107,10 @@ const Header = () => {
 
         <div className="header-auth">
           {user ? (
-            <div className="user-profile-wrapper">
-              <button className="user-profile-btn" onClick={toggleProfile}>
+            <>      
+              
+              <div className="user-profile-wrapper">
+                <button className="user-profile-btn" onClick={toggleProfile}>
                 <img src={userAvatar} alt={userName} className="user-avatar" />
                 <span className="user-name">{userName}</span>
                 <svg 
@@ -139,14 +148,15 @@ const Header = () => {
                     <i className="ri-group-line"></i>
                     <span>My Clubs</span>
                   </Link>
-                  <div className="dropdown-divider"></div>
+                  
                   <button className="dropdown-item logout-item" onClick={handleLogout}>
                     <i className="ri-logout-box-line"></i>
                     <span>Logout</span>
                   </button>
                 </div>
               )}
-            </div>
+              </div>
+            </>
           ) : (
             <>
               <Link to="/login" className="auth-link login-link">
@@ -167,9 +177,8 @@ const Header = () => {
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
-          <span></span>
-          <span></span>
-          <span></span>
+
+    
         </button>
       </div>
     </header>

@@ -12,6 +12,7 @@ import Signup from "./components/Signup";
 import Profile from "./components/Profile";
 import EditProfile from "./components/EditProfile";
 import Clubs from "./components/Clubs";
+import ClubProfile from "./components/ClubProfile";
 import Feed from "./components/Feed";
 import Events from "./components/Events";
 
@@ -43,6 +44,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Clubs />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/clubs/:id" 
+            element={
+              <ProtectedRoute>
+                <ClubProfile />
               </ProtectedRoute>
             } 
           />
