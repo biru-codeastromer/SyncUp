@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./MockAuthContext";
+
 import "../index.css";
 
 const Login = () => {
@@ -10,6 +11,14 @@ const Login = () => {
     email: "",
     password: "",
   });
+  
+  const { login, loading, error, setError } = useAuth();
+
+  useEffect(() => {
+    return () => {
+      setError("");
+    };
+  }, [setError]);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -99,9 +108,11 @@ const Login = () => {
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
+
           {error && <p className="error-message" style={{ gridColumn: '1 / -1', color: '#ff6b6b', fontSize: '14px', marginBottom: '10px' }}>{error}</p>}
           
           <div className="form-group">
+\
             <label htmlFor="email" className="form-label">
               Email address
             </label>
@@ -118,7 +129,7 @@ const Login = () => {
             />
           </div>
 
-          <div className="form-group">
+          <div className="form-group" style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="password" className="form-label">
               Password
             </label>

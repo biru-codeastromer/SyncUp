@@ -2546,3 +2546,17 @@ body.dark-mode .events-empty {
   .events-subtitle { font-size: 0.9rem; }
   .events-filter-btn { padding: 6px 16px; font-size: 0.85rem; }
 }
+
+/* --- Main Layout Styles --- */
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* --- Responsive for Layout --- */
+@media (max-width: 768px) {
+  .content-container {
+    padding: 1rem;
+  }
+}
