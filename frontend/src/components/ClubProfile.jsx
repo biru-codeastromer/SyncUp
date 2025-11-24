@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from './Layout';
-import { useAuth } from './MockAuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const ClubProfile = () => {
   const { id } = useParams();
@@ -175,7 +175,7 @@ const ClubProfile = () => {
       const newPost = {
         id: posts.length + 1,
         user_name: user?.name || 'You',
-        user_avatar: user?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face',
+        user_avatar: user?.profile_pic_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face',
         content: postContent,
         image_url: null,
         created_at: new Date().toISOString(),
@@ -253,10 +253,10 @@ const ClubProfile = () => {
           <div className="club-feed-center">
             {/* Post Input */}
             <div className="club-post-input-card">
-              <img 
-                src={user?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face'} 
-                alt="User" 
-                className="club-post-avatar" 
+              <img
+                src={user?.profile_pic_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face'}
+                alt="User"
+                className="club-post-avatar"
               />
               <input
                 type="text"

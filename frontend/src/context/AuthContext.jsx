@@ -5,26 +5,65 @@ import { useNavigate } from "react-router-dom";
 // Use port 5001 because macOS may reserve port 5000 for system services (AirPlay/Control Center).
 // You can also set REACT_APP_API_URL in your environment to override this.
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
+export const API_BASE_URL = API_URL;
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const [user, setUser] = useState(null); // We can add user details later
-  const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      // For now, we'll just set a dummy user if token exists
-      setUser({ token: token }); 
     } else {
       delete axios.defaults.headers.common["Authorization"];
     }
   }, [token]);
+
+  useEffect(() => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    const initialize = async () => {
+      await fetchCurrentUser();
+    };
+
+    initialize();
+  }, [token]);
+
+  const clearSession = (redirect = false) => {
+    localStorage.removeItem("token");
+    delete axios.defaults.headers.common["Authorization"];
+    setToken(null);
+    setUser(null);
+    setLoading(false);
+    if (redirect) {
+      navigate("/login");
+    }
+  };
+
+  const fetchCurrentUser = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/auth/me`);
+      setUser(response.data.user);
+    } catch (err) {
+      const message = err.response?.data?.error || err.message;
+      console.error("Fetch current user error:", message);
+      if (err.response?.status === 401) {
+        clearSession(true);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (email, password) => {
     setLoading(true);
@@ -37,13 +76,16 @@ export const AuthProvider = ({ children }) => {
       const newToken = response.data.token;
       localStorage.setItem("token", newToken);
       setToken(newToken);
-      setUser({ token: newToken });
-      navigate("/dashboard");
+      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+      await fetchCurrentUser();
+      navigate("/feed");
+      return true;
     } catch (err) {
-      console.error("Login error:", err.response?.data?.error || err.message);
-      setError(err.response?.data?.error || "Login failed. Please try again.");
-    } finally {
+      const message = err.response?.data?.error || "Login failed. Please try again.";
+      console.error("Login error:", message);
+      setError(message);
       setLoading(false);
+      return false;
     }
   };
   
@@ -56,20 +98,19 @@ export const AuthProvider = ({ children }) => {
         email,
         password,
       });
-      navigate("/login");
+      return true;
     } catch (err) {
-      console.error("Signup error:", err.response?.data?.error || err.message);
-      setError(err.response?.data?.error || "Signup failed. Please try again.");
+      const message = err.response?.data?.error || "Signup failed. Please try again.";
+      console.error("Signup error:", message);
+      setError(message);
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
   const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem("token");
-    navigate("/login");
+    clearSession(true);
   };
 
   const value = {
@@ -80,7 +121,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     loading,
     error,
-    setError
+    setError,
+    refreshUser: fetchCurrentUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

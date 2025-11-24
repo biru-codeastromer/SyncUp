@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from './MockAuthContext';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import 'remixicon/fonts/remixicon.css'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
 
   const toggleMenu = () => {
@@ -32,15 +31,14 @@ const Header = () => {
   };
 
   const handleLogout = async () => {
-    await signOut();
     setIsProfileOpen(false);
-    navigate('/login');
+    logout();
   };
 
   // Get user display data
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+  const userName = user?.name || user?.email?.split('@')[0] || 'User';
   const userEmail = user?.email || '';
-  const userAvatar = user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=6366f1&color=fff&size=150`;
+  const userAvatar = user?.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=6366f1&color=fff&size=150`;
 
   return (
     <>

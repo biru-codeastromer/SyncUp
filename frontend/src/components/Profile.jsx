@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Layout from "./Layout";
-import { useAuth } from "./MockAuthContext";
+import { API_BASE_URL, useAuth } from "../context/AuthContext";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("clubs");
@@ -10,68 +11,40 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [clubs, setClubs] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [profileError, setProfileError] = useState("");
 
-  // Set mock data on mount
   useEffect(() => {
-    const mockClubs = [
-      {
-        club_id: 1,
-        clubs: {
-          name: 'Coding Club',
-          description: 'A club for coding enthusiasts',
-          logo_url: 'https://img.icons8.com/color/96/000000/code.png',
-          id: 1
-        },
-        role: 'Admin'
-      },
-      {
-        club_id: 2,
-        clubs: {
-          name: 'Art Collective',
-          description: 'Express yourself through art',
-          logo_url: 'https://img.icons8.com/color/96/000000/paint-palette.png',
-          id: 2
-        },
-        role: 'Member'
+    const loadProfile = async () => {
+      if (!authUser?.user_id) {
+        setLoading(false);
+        setPosts([]);
+        setClubs([]);
+        return;
       }
-    ];
 
-    const mockPosts = [
-      {
-        id: 1,
-        content: 'Just joined the Coding Club! Excited to learn and build projects together.',
-        created_at: '2024-10-22T10:30:00Z',
-        likes: 15,
-        comments: 3,
-        user_name: 'You',
-        user_avatar: 'https://ui-avatars.com/api/?name=You&background=6366f1&color=fff&size=150'
-      },
-      {
-        id: 2,
-        content: 'Check out this cool project I built with React and Node.js!',
-        created_at: '2024-10-20T15:45:00Z',
-        likes: 42,
-        comments: 12,
-        user_name: 'You',
-        user_avatar: 'https://ui-avatars.com/api/?name=You&background=6366f1&color=fff&size=150'
+      try {
+        setLoading(true);
+        setProfileError("");
+        const response = await axios.get(`${API_BASE_URL}/api/posts`);
+        const userPosts = (response.data || []).filter(post => post.user_id === authUser.user_id);
+        setPosts(userPosts);
+        setClubs([]);
+      } catch (err) {
+        console.error("Failed to load profile data:", err.response?.data?.error || err.message);
+        setProfileError(err.response?.data?.error || "Failed to load your profile data.");
+      } finally {
+        setLoading(false);
       }
-    ];
-    
-    const timer = setTimeout(() => {
-      setClubs(mockClubs.map(club => club.clubs));
-      setPosts(mockPosts);
-      setLoading(false);
-    }, 500);
+    };
 
-    return () => clearTimeout(timer);
-  }, []);
+    loadProfile();
+  }, [authUser?.user_id, API_BASE_URL]);
 
-  // Mock user data
   const user = {
-    name: authUser?.user_metadata?.full_name || authUser?.email?.split('@')[0] || "User",
-    title: authUser?.user_metadata?.title || "Student",
-    bio: authUser?.user_metadata?.bio || "Welcome to my profile!",
-    avatar: authUser?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser?.user_metadata?.full_name || authUser?.email || 'User')}&background=6366f1&color=fff&size=150`
+    name: authUser?.name || authUser?.email?.split('@')[0] || "User",
+    title: "Student",
+    bio: authUser?.bio || "Welcome to my profile!",
+    avatar: authUser?.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser?.name || authUser?.email || 'User')}&background=6366f1&color=fff&size=150`
   };
 
   if (loading) {
@@ -147,6 +120,9 @@ const Profile = () => {
 
           {/* Tab Content */}
           <div className="profile-tab-content">
+            {profileError && (
+              <p className="profile-error-message">{profileError}</p>
+            )}
             {activeTab === 'clubs' && (
               <div className="profile-clubs-grid">
                 {clubs.length > 0 ? (
@@ -193,18 +169,18 @@ const Profile = () => {
                 {posts.length > 0 ? (
                   posts.map((post) => (
                     <div
-                      key={post.id}
+                      key={post.post_id}
                       className="profile-post-card"
                     >
                       <div className="profile-post-header">
                         <img
-                          src={post.user_avatar}
-                          alt={post.user_name}
+                          src={post.user?.profile_pic_url || user.avatar}
+                          alt={post.user?.name || user.name}
                           className="profile-post-avatar"
                         />
                         <div className="profile-post-user-info">
                           <p className="profile-post-user-name">
-                            {post.user_name}
+                            {post.user?.name || user.name}
                           </p>
                           <p className="profile-post-time">
                             {formatDate(post.created_at)}
@@ -215,18 +191,8 @@ const Profile = () => {
                         {post.content}
                       </p>
                       <div className="profile-post-stats">
-                        <span className="profile-post-stat">
-                          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                          </svg>
-                          {post.likes}
-                        </span>
-                        <span className="profile-post-stat">
-                          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                          </svg>
-                          {post.comments}
-                        </span>
+                        <span className="profile-post-stat">👍 {post.likes_count ?? 0}</span>
+                        <span className="profile-post-stat">💬 {post.comments_count ?? 0}</span>
                       </div>
                     </div>
                   ))

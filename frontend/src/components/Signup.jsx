@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "./AuthLayout";
-import { useAuth } from "./MockAuthContext";
+import { useAuth } from "../context/AuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signup, error: authError, setError: setAuthError, loading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -16,33 +16,35 @@ const Signup = () => {
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  // Redirect to feed if already logged in
   useEffect(() => {
     if (user) {
       navigate("/feed");
     }
   }, [user, navigate]);
-  
-  // Auto-fill demo data for testing
+
   useEffect(() => {
     setFormData({
-      firstName: "Demo",
-      lastName: "User",
+      name: "Demo User",
       email: "demo@example.com",
       password: "password123",
-      confirmPassword: "password123"
+      confirmPassword: "password123",
     });
   }, []);
 
-  // handle input changes
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+    }
+  }, [authError]);
+
+  useEffect(() => () => setAuthError(""), [setAuthError]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // password validation
   const validatePassword = (password, confirmPassword) => {
     if (password.length < 6) {
       return "Password must be at least 6 characters long.";
@@ -53,41 +55,32 @@ const Signup = () => {
     return "";
   };
 
-  // signup function
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
+    setAuthError("");
     setMessage("");
-    
-    // Validate input
-    if (!formData.firstName || !formData.email || !formData.password || !formData.confirmPassword) {
+
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError("Please fill in all required fields");
       return;
     }
-    
+
     const passwordError = validatePassword(formData.password, formData.confirmPassword);
     if (passwordError) {
       setError(passwordError);
       return;
     }
-    
-    try {
-      setLoading(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // In a real app, you would call your signup API here
-      // For demo, we'll just redirect to login
+
+    const success = await signup(formData.name.trim(), formData.email.trim(), formData.password);
+
+    if (success) {
       setMessage("Signup successful! Redirecting to login...");
       setTimeout(() => {
         navigate("/login");
       }, 1500);
-      
-    } catch (err) {
-      console.error("Signup error:", err);
-      setError("An error occurred during signup. Please try again.");
-    } finally {
-      setLoading(false);
+    } else {
+      setError(authError || "Signup failed. Please try again.");
     }
   };
 
@@ -162,8 +155,8 @@ const Signup = () => {
             />
           </div>
 
-          <button type="submit" className="auth-button" disabled={loading}>
-            {loading ? "Creating..." : "Create Account"}
+          <button type="submit" className="auth-button" disabled={authLoading}>
+            {authLoading ? "Creating..." : "Create Account"}
           </button>
 
           <div className="auth-link">
@@ -171,7 +164,7 @@ const Signup = () => {
               Already have an account? <Link to="/login">Sign in here</Link>
             </p>
             <p className="auth-link-text">
-              <Link to="/clubs">Browse Clubs</Link> • <Link to="/feed">View Feed</Link> • <Link to="/profile">View Demo Profile</Link>
+              <Link to="/clubs">Browse Clubs</Link> • <Link to="/feed">View Feed</Link> • <Link to="/profile">View Profile</Link>
             </p>
           </div>
         </form>

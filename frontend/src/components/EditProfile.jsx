@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "./Layout";
-import { useAuth } from "./MockAuthContext";
+import { useAuth } from "../context/AuthContext";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -57,14 +57,13 @@ const EditProfile = () => {
         }
       ];
       
-      // Set form data from user metadata
       setFormData({
-        full_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || "",
-        bio: user?.user_metadata?.bio || "",
-        title: user?.user_metadata?.title || "",
-        avatar_url: user?.user_metadata?.avatar_url || "",
+        full_name: user?.name || user?.email?.split('@')[0] || "",
+        bio: user?.bio || "",
+        title: "",
+        avatar_url: user?.profile_pic_url || "",
       });
-      setAvatarPreview(user?.user_metadata?.avatar_url || "");
+      setAvatarPreview(user?.profile_pic_url || "");
       
       // Set mock clubs
       setAllClubs(mockClubs);
