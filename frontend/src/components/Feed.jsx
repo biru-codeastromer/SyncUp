@@ -10,6 +10,9 @@ const Feed = () => {
   const [feedError, setFeedError] = useState('');
   const [loadingPosts, setLoadingPosts] = useState(true);
   const { user } = useAuth();
+  const [newContent, setNewContent] = useState('');
+  const [newImageUrl, setNewImageUrl] = useState('');
+  const [posting, setPosting] = useState(false);
 
   const myClubs = [
     { id: 1, name: 'Coding Club', icon: '💻', active: true },
@@ -43,8 +46,13 @@ const Feed = () => {
     const fetchPosts = async () => {
       try {
         setLoadingPosts(true);
-        const response = await axios.get(`${API_BASE_URL}/api/posts`);
-        setPosts(response.data || []);
+        const response = await axios.get(`${API_BASE_URL}/api/posts`, {
+          params: { page: 1, limit: 20 },
+        });
+        const payload = Array.isArray(response.data)
+          ? response.data
+          : response.data?.data;
+        setPosts(payload || []);
       } catch (err) {
         console.error('Failed to load posts:', err.response?.data?.error || err.message);
         setFeedError(err.response?.data?.error || 'Failed to load posts. Please try again.');
@@ -117,22 +125,49 @@ const Feed = () => {
                 alt={user?.name || 'User'}
                 className="create-post-avatar"
               />
-              <input
-                type="text"
-                placeholder="What's on your mind?"
+              <textarea
+                value={newContent}
+                onChange={(e) => setNewContent(e.target.value)}
+                placeholder={`What's on your mind, ${user?.name || 'there'}?`}
                 className="create-post-input"
-                disabled
+                rows={3}
               />
             </div>
-            <div className="create-post-actions">
-              <button className="create-action-btn">
-                <span>📷</span> Photo
-              </button>
-              <button className="create-action-btn">
-                <span>🎥</span> Video
-              </button>
-              <button className="create-action-btn">
-                <span>📅</span> Event
+
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
+              <input
+                type="text"
+                placeholder="Optional image URL"
+                value={newImageUrl}
+                onChange={(e) => setNewImageUrl(e.target.value)}
+                className="create-post-image-input"
+                style={{ flex: 1 }}
+              />
+              <button
+                className="create-post-submit"
+                onClick={async () => {
+                  if (!newContent || !newContent.trim()) return setFeedError('Please enter post content.');
+                  setPosting(true);
+                  setFeedError('');
+                  try {
+                    const payload = { content: newContent.trim() };
+                    if (newImageUrl && newImageUrl.trim()) payload.image_url = newImageUrl.trim();
+                    const res = await axios.post(`${API_BASE_URL}/api/posts`, payload);
+                    const created = res.data?.data ? res.data.data : res.data;
+                    const postObj = created || res.data;
+                    setPosts(prev => [postObj, ...prev]);
+                    setNewContent('');
+                    setNewImageUrl('');
+                  } catch (err) {
+                    console.error('Create post failed:', err.response?.data || err.message);
+                    setFeedError(err.response?.data?.error || 'Failed to create post.');
+                  } finally {
+                    setPosting(false);
+                  }
+                }}
+                disabled={posting}
+              >
+                {posting ? 'Posting...' : 'Post'}
               </button>
             </div>
           </div>
