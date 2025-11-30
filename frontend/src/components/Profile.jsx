@@ -38,7 +38,7 @@ const Profile = () => {
     };
 
     loadProfile();
-  }, [authUser?.user_id, API_BASE_URL]);
+  }, [authUser?.user_id]);
 
   const user = {
     name: authUser?.name || authUser?.email?.split('@')[0] || "User",

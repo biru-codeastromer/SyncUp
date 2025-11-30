@@ -13,6 +13,12 @@ const Feed = () => {
   const [newContent, setNewContent] = useState('');
   const [newImageUrl, setNewImageUrl] = useState('');
   const [posting, setPosting] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [selectedFileName, setSelectedFileName] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasPrevPage, setHasPrevPage] = useState(false);
 
   const myClubs = [
     { id: 1, name: 'Coding Club', icon: '💻', active: true },
@@ -43,17 +49,33 @@ const Feed = () => {
   ];
 
   // fetchPosts is used on mount and after creating a post so we expose it here
-  const fetchPosts = async (page = 1, limit = 20) => {
+  const fetchPosts = async (pageNum = 1, limit = 20) => {
     try {
       setLoadingPosts(true);
+      console.log('[Feed] Fetching posts, page:', pageNum);
       const response = await axios.get(`${API_BASE_URL}/api/posts`, {
-        params: { page, limit },
+        params: { page: pageNum, limit },
       });
+      console.log('[Feed] Response:', response.data);
       const payload = Array.isArray(response.data) ? response.data : response.data?.data;
+      console.log('[Feed] Setting posts:', payload?.length, 'items');
       setPosts(payload || []);
+      // pagination metadata (if available)
+      const meta = response.data?.pagination;
+      if (meta) {
+        setPage(meta.page);
+        setTotalPages(meta.totalPages);
+        setHasNextPage(Boolean(meta.hasNextPage));
+        setHasPrevPage(Boolean(meta.hasPrevPage));
+      } else {
+        setPage(1);
+        setTotalPages(1);
+        setHasNextPage(false);
+        setHasPrevPage(false);
+      }
       setFeedError('');
     } catch (err) {
-      console.error('Failed to load posts:', err.response?.data?.error || err.message);
+      console.error('[Feed] Failed to load posts:', err.response?.data?.error || err.message);
       setFeedError(err.response?.data?.error || 'Failed to load posts. Please try again.');
     } finally {
       setLoadingPosts(false);
@@ -89,6 +111,20 @@ const Feed = () => {
       ...prev,
       [postId]: !prev[postId]
     }));
+  };
+
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    
+    try {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      await axios.delete(`${API_BASE_URL}/api/posts/${postId}`, { headers });
+      // Refresh posts after deletion
+      await fetchPosts(page, 20);
+    } catch (err) {
+      console.error('Delete failed:', err.response?.data || err.message);
+      setFeedError(err.response?.data?.error || 'Failed to delete post.');
+    }
   };
 
   return (
@@ -135,14 +171,35 @@ const Feed = () => {
             </div>
 
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
-              <input
-                type="text"
-                placeholder="Optional image URL"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                className="create-post-image-input"
-                style={{ flex: 1 }}
-              />
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flex: 1 }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    setUploading(true);
+                    setSelectedFileName(file.name);
+                    try {
+                      const form = new FormData();
+                      form.append('file', file);
+                      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+                      const res = await axios.post(`${API_BASE_URL}/api/uploads`, form, {
+                        headers: { 'Content-Type': 'multipart/form-data', ...headers },
+                      });
+                      if (res.data?.url) setNewImageUrl(res.data.url);
+                    } catch (err) {
+                      console.error('Upload failed:', err.response?.data || err.message);
+                      setFeedError('Image upload failed.');
+                    } finally {
+                      setUploading(false);
+                    }
+                  }}
+                />
+                <div style={{ flex: 1 }}>
+                  {uploading ? <span>Uploading {selectedFileName}...</span> : (newImageUrl ? <img src={newImageUrl} alt="preview" style={{ maxHeight: 80 }} /> : <span className="muted">No image selected</span>)}
+                </div>
+              </div>
               <button
                 className="create-post-submit"
                 onClick={async () => {
@@ -215,6 +272,7 @@ const Feed = () => {
               const avatar = post.user?.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6366f1&color=fff&size=128`;
               const postLikes = post.likes_count ?? 0;
               const postComments = post.comments_count ?? 0;
+              const isOwnPost = user && post.user_id === user.user_id;
 
               return (
                 <div key={post.post_id} className="post-card">
@@ -226,6 +284,24 @@ const Feed = () => {
                         <p className="post-time">Posted {formatDate(post.created_at)}</p>
                       </div>
                     </div>
+                    {isOwnPost && (
+                      <button
+                        className="post-delete-btn"
+                        onClick={() => handleDeletePost(post.post_id)}
+                        title="Delete post"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#ef4444',
+                          cursor: 'pointer',
+                          fontSize: '1.1rem',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        🗑️
+                      </button>
+                    )}
                   </div>
 
                   <div className="post-body">
@@ -256,6 +332,11 @@ const Feed = () => {
                 </div>
               );
             })}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 12 }}>
+            <button onClick={() => { if (hasPrevPage) { fetchPosts(page - 1, 20); } }} disabled={!hasPrevPage}>Prev</button>
+            <span style={{ alignSelf: 'center' }}>Page {page} / {totalPages}</span>
+            <button onClick={() => { if (hasNextPage) { fetchPosts(page + 1, 20); } }} disabled={!hasNextPage}>Next</button>
           </div>
         </div>
 

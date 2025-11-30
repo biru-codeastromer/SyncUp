@@ -1,8 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
 import authRoutes from "./routes/auth.js";
 import postRoutes from "./routes/posts.js";
+import uploadRoutes from "./routes/uploads.js";
 
 dotenv.config();
 const app = express();
@@ -15,6 +17,10 @@ app.use(express.json());
 
 app.use("/auth", authRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/uploads", uploadRoutes);
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.get("/", (req, res) => {
 	res.send("SyncUp Backend Running!");
