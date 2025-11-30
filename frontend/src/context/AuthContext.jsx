@@ -25,17 +25,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  
+
   useEffect(() => {
     if (!token) {
       setLoading(false);
       return;
     }
-
-    const initialize = async () => {
-      await fetchCurrentUser();
-    };
-
-    initialize();
+    // fetch current user when a token is present
+    fetchCurrentUser();
   }, [token]);
 
   const clearSession = (redirect = false) => {

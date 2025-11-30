@@ -86,18 +86,29 @@ const Signup = () => {
 
   return (
     <AuthLayout>
-      <div className="auth-card">
+      <div className="auth-card auth-card-signup">
+        {/* Logo/Brand */}
+        <div className="auth-brand">
+          <div className="auth-logo">
+            <span className="auth-logo-icon">🚀</span>
+          </div>
+          <h1 className="auth-brand-name">SyncUp</h1>
+        </div>
+
         <div className="auth-header">
           <h2 className="auth-title">Create Account</h2>
-          <p className="auth-subtitle">Join us today and get started</p>
+          <p className="auth-subtitle">Join our community today</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSignup}>
-          {error && <p className="error-message">{error}</p>}
-          {message && <p className="success-message">{message}</p>}
+          {error && <div className="error-message">{error}</div>}
+          {message && <div className="success-message">{message}</div>}
 
           <div className="form-group" style={{ gridColumn: "1 / -1" }}>
-            <label htmlFor="name" className="form-label">Full Name</label>
+            <label htmlFor="name" className="form-label">
+              <i className="ri-user-line"></i>
+              Full Name
+            </label>
             <input
               id="name"
               name="name"
@@ -110,8 +121,11 @@ const Signup = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">Email address</label>
+          <div className="form-group" style={{ gridColumn: "1 / -1" }}>
+            <label htmlFor="email" className="form-label">
+              <i className="ri-mail-line"></i>
+              Email address
+            </label>
             <input
               id="email"
               name="email"
@@ -126,7 +140,10 @@ const Signup = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password" className="form-label">Password</label>
+            <label htmlFor="password" className="form-label">
+              <i className="ri-lock-line"></i>
+              Password
+            </label>
             <input
               id="password"
               name="password"
@@ -134,14 +151,17 @@ const Signup = () => {
               autoComplete="new-password"
               required
               className="form-input"
-              placeholder="Create a password (min. 6 characters)"
+              placeholder="Min. 6 characters"
               value={formData.password}
               onChange={handleChange}
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+            <label htmlFor="confirmPassword" className="form-label">
+              <i className="ri-lock-password-line"></i>
+              Confirm Password
+            </label>
             <input
               id="confirmPassword"
               name="confirmPassword"
@@ -149,22 +169,33 @@ const Signup = () => {
               autoComplete="new-password"
               required
               className="form-input"
-              placeholder="Confirm your password"
+              placeholder="Confirm password"
               value={formData.confirmPassword}
               onChange={handleChange}
             />
           </div>
 
           <button type="submit" className="auth-button" disabled={authLoading}>
-            {authLoading ? "Creating..." : "Create Account"}
+            {authLoading ? (
+              <>
+                <span className="auth-button-spinner"></span>
+                Creating account...
+              </>
+            ) : (
+              <>
+                Create Account
+                <i className="ri-arrow-right-line"></i>
+              </>
+            )}
           </button>
+
+          <div className="auth-divider">
+            <span>or</span>
+          </div>
 
           <div className="auth-link">
             <p className="auth-link-text">
-              Already have an account? <Link to="/login">Sign in here</Link>
-            </p>
-            <p className="auth-link-text">
-              <Link to="/clubs">Browse Clubs</Link> • <Link to="/feed">View Feed</Link> • <Link to="/profile">View Profile</Link>
+              Already have an account? <Link to="/login">Sign in</Link>
             </p>
           </div>
         </form>

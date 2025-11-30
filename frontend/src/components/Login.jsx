@@ -68,38 +68,41 @@ const Login = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      {/* Decorative elements */}
+      <div className="auth-bg-decoration"></div>
+      
+      <div className="auth-card auth-card-login">
+        {/* Logo/Brand */}
+        <div className="auth-brand">
+          <div className="auth-logo">
+            <span className="auth-logo-icon">🚀</span>
+          </div>
+          <h1 className="auth-brand-name">SyncUp</h1>
+        </div>
+
         <div className="auth-header">
           <h2 className="auth-title">Welcome Back</h2>
-          <p className="auth-subtitle">Sign in to your account to continue</p>
+          <p className="auth-subtitle">Sign in to continue to your account</p>
         </div>
 
         {/* Demo Credentials Info */}
-        <div style={{
-          background: 'rgba(99, 102, 241, 0.1)',
-          border: '1px solid rgba(99, 102, 241, 0.3)',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px'
-        }}>
-          <p style={{ fontSize: '13px', color: '#a5b4fc', marginBottom: '6px', fontWeight: '500' }}>
-            🎯 Demo Credentials (Pre-filled)
-          </p>
-          <p style={{ fontSize: '12px', color: '#c7d2fe', marginBottom: '2px' }}>
-            <strong>Email:</strong> demo@example.com
-          </p>
-          <p style={{ fontSize: '12px', color: '#c7d2fe' }}>
-            <strong>Password:</strong> password123
-          </p>
+        <div className="demo-credentials-box">
+          <div className="demo-credentials-header">
+            <span className="demo-icon">🎯</span>
+            <span className="demo-title">Demo Credentials</span>
+          </div>
+          <div className="demo-credentials-content">
+            <p><strong>Email:</strong> demo@example.com</p>
+            <p><strong>Password:</strong> password123</p>
+          </div>
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-
-          {error && <p className="error-message" style={{ gridColumn: '1 / -1', color: '#ff6b6b', fontSize: '14px', marginBottom: '10px' }}>{error}</p>}
+        <form className="auth-form auth-form-single" onSubmit={handleSubmit}>
+          {error && <div className="error-message">{error}</div>}
           
           <div className="form-group">
-\
             <label htmlFor="email" className="form-label">
+              <i className="ri-mail-line"></i>
               Email address
             </label>
             <input
@@ -115,8 +118,9 @@ const Login = () => {
             />
           </div>
 
-          <div className="form-group" style={{ gridColumn: "1 / -1" }}>
+          <div className="form-group">
             <label htmlFor="password" className="form-label">
+              <i className="ri-lock-line"></i>
               Password
             </label>
             <input
@@ -132,18 +136,31 @@ const Login = () => {
             />
           </div>
 
-            <div className="forgot-password">
-              <Link to="/forgot-password">Forgot password?</Link>
-            </div>
-      
+          <div className="forgot-password">
+            <Link to="/forgot-password">Forgot password?</Link>
+          </div>
 
           <button type="submit" className="auth-button" disabled={loading}>
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? (
+              <>
+                <span className="auth-button-spinner"></span>
+                Signing in...
+              </>
+            ) : (
+              <>
+                Sign in
+                <i className="ri-arrow-right-line"></i>
+              </>
+            )}
           </button>
+
+          <div className="auth-divider">
+            <span>or</span>
+          </div>
 
           <div className="auth-link">
             <p className="auth-link-text">
-              Don't have an account? <Link to="/signup">Sign up here</Link>
+              Don't have an account? <Link to="/signup">Create one</Link>
             </p>
           </div>
         </form>

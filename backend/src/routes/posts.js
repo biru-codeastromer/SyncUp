@@ -81,4 +81,43 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
+// Delete a post (only owner can delete)
+router.delete("/:id", authMiddleware, async (req, res) => {
+  const postId = parseInt(req.params.id, 10);
+  const userId = req.user.userId;
+
+  if (!postId || isNaN(postId)) {
+    return res.status(400).json({ error: "Invalid post ID." });
+  }
+
+  try {
+    // Check if post exists and belongs to user
+    const post = await prisma.post.findUnique({
+      where: { post_id: postId },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found." });
+    }
+
+    if (post.user_id !== userId) {
+      return res.status(403).json({ error: "You can only delete your own posts." });
+    }
+
+    // Delete related records first (likes, comments)
+    await prisma.like.deleteMany({ where: { post_id: postId } });
+    await prisma.comment.deleteMany({ where: { post_id: postId } });
+
+    // Delete the post
+    await prisma.post.delete({
+      where: { post_id: postId },
+    });
+
+    res.status(200).json({ message: "Post deleted successfully." });
+  } catch (err) {
+    console.error("Failed to delete post:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 export default router;

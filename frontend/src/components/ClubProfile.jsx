@@ -1,4 +1,79 @@
 import React, { useState, useEffect } from 'react';
+// Move mock club data to module scope to keep useEffect deps clean
+const clubsDataMap = {
+  1: {
+    id: 1,
+    name: 'Chess Club',
+    description: 'Sharpen your mind and your game.',
+    category: 'Academic',
+    memberCount: 125,
+    image_url: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=400&h=250&fit=crop',
+    logo_url: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=150&h=150&fit=crop',
+    about: 'We are a group of students passionate about chess and strategic thinking. Our mission is to foster a community where members can learn, compete, and improve their game together. We hold regular tournaments, host guest speakers, and participate in various chess challenges.',
+    contact: 'chessclub@university.edu',
+    officers: ['Alice', 'Bob', 'Charlie']
+  },
+  2: {
+    id: 2,
+    name: 'Debate Team',
+    description: 'Engage in stimulating discussions.',
+    category: 'Academic',
+    memberCount: 98,
+    image_url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=250&fit=crop',
+    logo_url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=150&h=150&fit=crop',
+    about: 'We are a group of students passionate about debate and public speaking. Our mission is to foster a community where members can learn, collaborate, and improve their argumentation skills together. We hold regular practice sessions, host guest speakers from the industry, and participate in various debate competitions.',
+    contact: 'debateteam@university.edu',
+    officers: ['Alice', 'Bob', 'Charlie']
+  },
+  3: {
+    id: 3,
+    name: 'Hiking Club',
+    description: 'Explore the great outdoors with us.',
+    category: 'Sport',
+    memberCount: 156,
+    image_url: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=400&h=250&fit=crop',
+    logo_url: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=150&h=150&fit=crop',
+    about: 'We are a group of students passionate about hiking and outdoor adventures. Our mission is to foster a community where members can explore nature, stay active, and create amazing memories together. We organize regular hikes, host outdoor workshops, and participate in various adventure challenges.',
+    contact: 'hikingclub@university.edu',
+    officers: ['Alice', 'Bob', 'Charlie']
+  },
+  4: {
+    id: 4,
+    name: 'Art Society',
+    description: 'Unleash your creativity.',
+    category: 'Social',
+    memberCount: 142,
+    image_url: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=250&fit=crop',
+    logo_url: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=150&h=150&fit=crop',
+    about: 'We are a group of students passionate about art and creativity. Our mission is to foster a community where members can learn, collaborate, and create amazing artworks together. We hold regular workshops, host guest artists, and participate in various art exhibitions.',
+    contact: 'artsociety@university.edu',
+    officers: ['Alice', 'Bob', 'Charlie']
+  },
+  5: {
+    id: 5,
+    name: 'Tech Innovators',
+    description: 'Build the future of technology.',
+    category: 'Academic',
+    memberCount: 125,
+    image_url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=250&fit=crop',
+    logo_url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=150&h=150&fit=crop',
+    about: 'We are a group of students passionate about technology and innovation. Our mission is to foster a community where members can learn, collaborate, and create amazing things together. We hold regular workshops, host guest speakers from the industry, and participate in various tech challenges.',
+    contact: 'techinnovators@university.edu',
+    officers: ['Alice', 'Bob', 'Charlie']
+  },
+  6: {
+    id: 6,
+    name: 'Film Club',
+    description: 'For aspiring filmmakers and cinephiles.',
+    category: 'Social',
+    memberCount: 89,
+    image_url: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=400&h=250&fit=crop',
+    logo_url: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=150&h=150&fit=crop',
+    about: 'We are a group of students passionate about film and cinematography. Our mission is to foster a community where members can learn, collaborate, and create amazing films together. We hold regular screenings, host guest filmmakers, and participate in various film festivals.',
+    contact: 'filmclub@university.edu',
+    officers: ['Alice', 'Bob', 'Charlie']
+  }
+};
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from './Layout';
 import { useAuth } from '../context/AuthContext';
@@ -12,83 +87,11 @@ const ClubProfile = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [postContent, setPostContent] = useState('');
-  const [likedPosts, setLikedPosts] = useState({});
+  // likedPosts and handleLike were unused; removed to clean lint warnings
 
   // Mock club data - in real app, fetch by id
-  const clubsDataMap = {
-    1: {
-      id: 1,
-      name: 'Chess Club',
-      description: 'Sharpen your mind and your game.',
-      category: 'Academic',
-      memberCount: 125,
-      image_url: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=400&h=250&fit=crop',
-      logo_url: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=150&h=150&fit=crop',
-      about: 'We are a group of students passionate about chess and strategic thinking. Our mission is to foster a community where members can learn, compete, and improve their game together. We hold regular tournaments, host guest speakers, and participate in various chess challenges.',
-      contact: 'chessclub@university.edu',
-      officers: ['Alice', 'Bob', 'Charlie']
-    },
-    2: {
-      id: 2,
-      name: 'Debate Team',
-      description: 'Engage in stimulating discussions.',
-      category: 'Academic',
-      memberCount: 98,
-      image_url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=250&fit=crop',
-      logo_url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=150&h=150&fit=crop',
-      about: 'We are a group of students passionate about debate and public speaking. Our mission is to foster a community where members can learn, collaborate, and improve their argumentation skills together. We hold regular practice sessions, host guest speakers from the industry, and participate in various debate competitions.',
-      contact: 'debateteam@university.edu',
-      officers: ['Alice', 'Bob', 'Charlie']
-    },
-    3: {
-      id: 3,
-      name: 'Hiking Club',
-      description: 'Explore the great outdoors with us.',
-      category: 'Sport',
-      memberCount: 156,
-      image_url: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=400&h=250&fit=crop',
-      logo_url: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=150&h=150&fit=crop',
-      about: 'We are a group of students passionate about hiking and outdoor adventures. Our mission is to foster a community where members can explore nature, stay active, and create amazing memories together. We organize regular hikes, host outdoor workshops, and participate in various adventure challenges.',
-      contact: 'hikingclub@university.edu',
-      officers: ['Alice', 'Bob', 'Charlie']
-    },
-    4: {
-      id: 4,
-      name: 'Art Society',
-      description: 'Unleash your creativity.',
-      category: 'Social',
-      memberCount: 142,
-      image_url: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=250&fit=crop',
-      logo_url: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=150&h=150&fit=crop',
-      about: 'We are a group of students passionate about art and creativity. Our mission is to foster a community where members can learn, collaborate, and create amazing artworks together. We hold regular workshops, host guest artists, and participate in various art exhibitions.',
-      contact: 'artsociety@university.edu',
-      officers: ['Alice', 'Bob', 'Charlie']
-    },
-    5: {
-      id: 5,
-      name: 'Tech Innovators',
-      description: 'Build the future of technology.',
-      category: 'Academic',
-      memberCount: 125,
-      image_url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=250&fit=crop',
-      logo_url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=150&h=150&fit=crop',
-      about: 'We are a group of students passionate about technology and innovation. Our mission is to foster a community where members can learn, collaborate, and create amazing things together. We hold regular workshops, host guest speakers from the industry, and participate in various tech challenges.',
-      contact: 'techinnovators@university.edu',
-      officers: ['Alice', 'Bob', 'Charlie']
-    },
-    6: {
-      id: 6,
-      name: 'Film Club',
-      description: 'For aspiring filmmakers and cinephiles.',
-      category: 'Social',
-      memberCount: 89,
-      image_url: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=400&h=250&fit=crop',
-      logo_url: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=150&h=150&fit=crop',
-      about: 'We are a group of students passionate about film and cinematography. Our mission is to foster a community where members can learn, collaborate, and create amazing films together. We hold regular screenings, host guest filmmakers, and participate in various film festivals.',
-      contact: 'filmclub@university.edu',
-      officers: ['Alice', 'Bob', 'Charlie']
-    }
-  };
+  // clubsDataMap moved to module scope to avoid hook dependency warnings
+  
 
   useEffect(() => {
     // Simulate loading
@@ -163,12 +166,7 @@ const ClubProfile = () => {
     return date.toLocaleDateString();
   };
 
-  const handleLike = (postId) => {
-    setLikedPosts(prev => ({
-      ...prev,
-      [postId]: !prev[postId]
-    }));
-  };
+  
 
   const handlePost = () => {
     if (postContent.trim()) {
