@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import Layout from './Layout';
+import { useAuth } from '../context/AuthContext';
+
 // Move mock club data to module scope to keep useEffect deps clean
 const clubsDataMap = {
   1: {
@@ -74,9 +78,6 @@ const clubsDataMap = {
     officers: ['Alice', 'Bob', 'Charlie']
   }
 };
-import { useParams, useNavigate } from 'react-router-dom';
-import Layout from './Layout';
-import { useAuth } from '../context/AuthContext';
 
 const ClubProfile = () => {
   const { id } = useParams();
