@@ -17,10 +17,10 @@ app.use("/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 
 app.get("/", (req, res) => {
-  res.send("SyncUp Backend Running!");
+	res.send("SyncUp Backend Running!");
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+	console.log(`Server running on port ${PORT}`);
 });
