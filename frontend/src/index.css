@@ -442,7 +442,7 @@ code {
   box-shadow: 0 2px 10px 0 rgba(58, 141, 255, 0.3), 0 1px 3px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* Responsive adjustments for auth form (signup/login) */
+
 @media (max-width: 768px) {
   .auth-card {
     padding: 24px;
@@ -456,7 +456,7 @@ code {
   }
 
   .form-group[style] {
-    /* inline gridColumn style on Full Name field should span the single column */
+ 
     grid-column: auto !important;
   }
 

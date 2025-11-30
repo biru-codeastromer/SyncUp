@@ -9,7 +9,7 @@ const Feed = () => {
   const [posts, setPosts] = useState([]);
   const [feedError, setFeedError] = useState('');
   const [loadingPosts, setLoadingPosts] = useState(true);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [newContent, setNewContent] = useState('');
   const [newImageUrl, setNewImageUrl] = useState('');
   const [posting, setPosting] = useState(false);
@@ -42,25 +42,25 @@ const Feed = () => {
     }
   ];
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoadingPosts(true);
-        const response = await axios.get(`${API_BASE_URL}/api/posts`, {
-          params: { page: 1, limit: 20 },
-        });
-        const payload = Array.isArray(response.data)
-          ? response.data
-          : response.data?.data;
-        setPosts(payload || []);
-      } catch (err) {
-        console.error('Failed to load posts:', err.response?.data?.error || err.message);
-        setFeedError(err.response?.data?.error || 'Failed to load posts. Please try again.');
-      } finally {
-        setLoadingPosts(false);
-      }
-    };
+  // fetchPosts is used on mount and after creating a post so we expose it here
+  const fetchPosts = async (page = 1, limit = 20) => {
+    try {
+      setLoadingPosts(true);
+      const response = await axios.get(`${API_BASE_URL}/api/posts`, {
+        params: { page, limit },
+      });
+      const payload = Array.isArray(response.data) ? response.data : response.data?.data;
+      setPosts(payload || []);
+      setFeedError('');
+    } catch (err) {
+      console.error('Failed to load posts:', err.response?.data?.error || err.message);
+      setFeedError(err.response?.data?.error || 'Failed to load posts. Please try again.');
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
 
+  useEffect(() => {
     fetchPosts();
   }, []);
 
@@ -152,10 +152,15 @@ const Feed = () => {
                   try {
                     const payload = { content: newContent.trim() };
                     if (newImageUrl && newImageUrl.trim()) payload.image_url = newImageUrl.trim();
-                    const res = await axios.post(`${API_BASE_URL}/api/posts`, payload);
-                    const created = res.data?.data ? res.data.data : res.data;
-                    const postObj = created || res.data;
-                    setPosts(prev => [postObj, ...prev]);
+
+                    // include Authorization header explicitly as a fallback
+                    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+                    await axios.post(`${API_BASE_URL}/api/posts`, payload, { headers });
+
+                    // refresh first page after successful create to keep pagination consistent
+                    await fetchPosts(1, 20);
+
                     setNewContent('');
                     setNewImageUrl('');
                   } catch (err) {
