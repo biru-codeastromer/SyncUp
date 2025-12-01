@@ -163,6 +163,41 @@ const Feed = () => {
     }
   };
 
+  const handleShare = async (post) => {
+    const postUrl = `${window.location.origin}/feed?post=${post.post_id}`;
+    const shareText = `Check out this post by ${post.user?.name || 'a user'} on SyncUp: "${post.content?.substring(0, 100)}${post.content?.length > 100 ? '...' : ''}"`;
+    
+    // Try native share API first (mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'SyncUp Post',
+          text: shareText,
+          url: postUrl,
+        });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Share failed:', err);
+        }
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(postUrl);
+        alert('Link copied to clipboard!');
+      } catch (err) {
+        // Final fallback
+        const textArea = document.createElement('textarea');
+        textArea.value = postUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Link copied to clipboard!');
+      }
+    }
+  };
+
   const handleAddComment = async (postId) => {
     const text = (commentInputs[postId] || '').trim();
     if (!text) return;
@@ -223,7 +258,7 @@ const Feed = () => {
           <div className="create-post-card">
             <div className="create-post-header">
               <img
-                src={user?.profile_pic_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face'}
+                src={user?.profile_pic_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=face'}
                 alt={user?.name || 'User'}
                 className="create-post-avatar"
               />
@@ -399,7 +434,12 @@ const Feed = () => {
                     >
                       {commentsByPost[post.post_id] ? ' Hide' : ' Comments'}
                     </button>
-                    <button className="post-action"> Share</button>
+                    <button 
+                      className="post-action"
+                      onClick={() => handleShare(post)}
+                    >
+                      🔗 Share
+                    </button>
                   </div>
                   {commentsByPost[post.post_id] && (
                     <div className="post-comments">
