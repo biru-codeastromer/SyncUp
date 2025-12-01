@@ -1,18 +1,20 @@
+/* Navbar - Light Mode (Default) */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #1e1f29;
-  border-bottom: 1px solid rgba(58, 141, 255, 0.3);
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .navbar-brand a {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #1f2937;
   text-decoration: none;
-  background: linear-gradient(135deg, #3a8dff 0%, #6fe7ff 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -25,20 +27,20 @@
 }
 
 .navbar-links a {
-  color: #b0c4de;
+  color: #6b7280;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
 }
 
 .navbar-links a:hover {
-  color: #6fe7ff;
+  color: #6366f1;
 }
 
 .navbar-logout-btn {
   background: transparent;
-  border: 1px solid #3a8dff;
-  color: #3a8dff;
+  border: 1px solid #6366f1;
+  color: #6366f1;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.9rem;
@@ -48,6 +50,35 @@
 }
 
 .navbar-logout-btn:hover {
+  background-color: rgba(99, 102, 241, 0.1);
+  color: #4f46e5;
+  border-color: #4f46e5;
+}
+
+/* Navbar - Dark Mode */
+body.dark-mode .navbar {
+  background-color: #1e1f29;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .navbar-brand a {
+  color: #ffffff;
+}
+
+body.dark-mode .navbar-links a {
+  color: #b0c4de;
+}
+
+body.dark-mode .navbar-links a:hover {
+  color: #6fe7ff;
+}
+
+body.dark-mode .navbar-logout-btn {
+  border-color: #3a8dff;
+  color: #3a8dff;
+}
+
+body.dark-mode .navbar-logout-btn:hover {
   background-color: rgba(58, 141, 255, 0.1);
   color: #6fe7ff;
   border-color: #6fe7ff;
