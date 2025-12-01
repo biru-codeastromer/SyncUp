@@ -208,6 +208,18 @@ const Feed = () => {
         </div>
 
         <div className="feed-center">
+          {feedError && (
+            <div className="feed-error-card">
+              <p className="error-message">{feedError}</p>
+              <button 
+                className="dismiss-error-btn"
+                onClick={() => setFeedError('')}
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
           <div className="create-post-card">
             <div className="create-post-header">
               <img
@@ -303,25 +315,19 @@ const Feed = () => {
           </div>
 
           <div className="feed-posts">
-            {feedError && (
-              <div className="post-card" style={{ borderColor: '#fecaca', background: '#fef2f2' }}>
-                <p style={{ color: '#b91c1c', margin: 0 }}>{feedError}</p>
-              </div>
-            )}
-
             {loadingPosts && (
               <div className="post-card">
                 <p style={{ margin: 0 }}>Loading posts...</p>
               </div>
             )}
 
-            {!loadingPosts && !feedError && filteredPosts.length === 0 && (
+            {!loadingPosts && filteredPosts.length === 0 && (
               <div className="post-card">
                 <p style={{ margin: 0 }}>No posts to show yet. Check back soon!</p>
               </div>
             )}
 
-            {!loadingPosts && !feedError && filteredPosts.map(post => {
+            {!loadingPosts && filteredPosts.map(post => {
               const displayName = post.user?.name || 'Club Member';
               const avatar = post.user?.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6366f1&color=fff&size=128`;
               const postLikes = post.likes_count ?? 0;

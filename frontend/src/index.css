@@ -2487,6 +2487,18 @@ body.dark-mode .pagination-btn { background: rgba(255, 255, 255, 0.05); border-c
 body.dark-mode .pagination-btn:hover:not(:disabled) { background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.4); color: #ffffff; }
 body.dark-mode .pagination-info { color: rgba(255, 255, 255, 0.6); }
 
+/* Feed Error Card - Light Mode */
+.feed-error-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; margin-bottom: 16px; }
+.feed-error-card .error-message { color: #b91c1c; margin: 0; flex: 1; font-size: 14px; font-weight: 500; }
+.dismiss-error-btn { padding: 6px 14px; background: #ffffff; border: 1px solid #fecaca; border-radius: 6px; color: #b91c1c; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
+.dismiss-error-btn:hover { background: #fef2f2; border-color: #f87171; }
+
+/* Feed Error Card - Dark Mode */
+body.dark-mode .feed-error-card { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); }
+body.dark-mode .feed-error-card .error-message { color: #fca5a5; }
+body.dark-mode .dismiss-error-btn { background: rgba(255, 255, 255, 0.05); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+body.dark-mode .dismiss-error-btn:hover { background: rgba(239, 68, 68, 0.15); }
+
 /* EDIT PROFILE - Light Mode (Default) */
 .edit-profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e5e7eb; }
 .cancel-btn { padding: 10px 24px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; color: #374151; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
