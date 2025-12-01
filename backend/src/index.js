@@ -5,7 +5,6 @@ import path from "path";
 import authRoutes from "./routes/auth.js";
 import postRoutes from "./routes/posts.js";
 import uploadRoutes from "./routes/uploads.js";
-import likesRoutes from "./routes/likes.js";
 
 dotenv.config();
 const app = express();
@@ -18,7 +17,6 @@ app.use(express.json());
 
 app.use("/auth", authRoutes);
 app.use("/api/posts", postRoutes);
-app.use("/api/likes", likesRoutes);
 app.use("/api/uploads", uploadRoutes);
 
 // Serve uploaded files
