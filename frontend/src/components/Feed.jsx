@@ -379,48 +379,48 @@ const Feed = () => {
                       onClick={() => handleLike(post.post_id)}
                       title={likedPosts[post.post_id] ? 'Unlike' : 'Like'}
                     >
-                      {likedPosts[post.post_id] ? '💙 Liked' : '👍 Like'}
+                      {likedPosts[post.post_id] ? ' Liked' : ' Like'}
                     </button>
                     <button
                       className="post-action"
                       onClick={() => handleToggleComments(post.post_id)}
                     >
-                      {commentsByPost[post.post_id] ? '🔽 Hide' : '💬 Comments'}
+                      {commentsByPost[post.post_id] ? ' Hide' : ' Comments'}
                     </button>
-                    <button className="post-action">🔗 Share</button>
+                    <button className="post-action"> Share</button>
                   </div>
                   {commentsByPost[post.post_id] && (
-                    <div className="post-comments" style={{ marginTop: 12 }}>
-                      <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    <div className="post-comments">
+                      <div className="post-comments-form">
                         <input
                           type="text"
                           placeholder="Write a comment..."
                           value={commentInputs[post.post_id] || ''}
                           onChange={e => setCommentInputs(prev => ({ ...prev, [post.post_id]: e.target.value }))}
-                          style={{ flex: 1, padding: '8px 10px', borderRadius: 6, border: '1px solid #444', background: '#121225', color: '#fff' }}
+                          className="post-comment-input"
                         />
                         <button
                           onClick={() => handleAddComment(post.post_id)}
-                          style={{ padding: '8px 12px', borderRadius: 6, background: '#6366f1', color: '#fff', border: 'none' }}
+                          className="post-comment-submit"
                         >Post</button>
                       </div>
-                      {commentsLoading[post.post_id] && <p style={{ margin: 0 }}>Loading comments...</p>}
+                      {commentsLoading[post.post_id] && <p className="post-comments-loading">Loading comments...</p>}
                       {!commentsLoading[post.post_id] && commentsByPost[post.post_id]?.length === 0 && (
-                        <p style={{ margin: 0 }} className="muted">No comments yet.</p>
+                        <p className="post-comments-empty">No comments yet.</p>
                       )}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div className="post-comments-list">
                         {commentsByPost[post.post_id]?.map(c => (
-                          <div key={c.comment_id} style={{ background: '#24264a', padding: '10px 12px', borderRadius: 8, border: '1px solid #343a5e' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div key={c.comment_id} className="post-comment-item">
+                            <div className="post-comment-header">
                               <img
                                 src={c.user?.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.user?.name || 'User')}&background=8b5cf6&color=fff&size=64`}
                                 alt={c.user?.name || 'User'}
-                                style={{ width: 28, height: 28, borderRadius: '50%' }}
+                                className="post-comment-avatar"
                               />
-                              <strong style={{ fontSize: '0.75rem', color: '#f5f7ff' }}>{c.user?.name || 'User'}</strong>
-                              <span style={{ fontSize: '0.65rem', color: '#b3b9d9' }}>{formatDate(c.created_at)}</span>
+                              <span className="post-comment-name">{c.user?.name || 'User'}</span>
+                              <span className="post-comment-time">{formatDate(c.created_at)}</span>
                             </div>
-                            <p style={{ margin: '6px 0 0', fontSize: '0.78rem', lineHeight: 1.3, color: '#e6e9f8' }}>{c.content}</p>
+                            <p className="post-comment-text">{c.content}</p>
                           </div>
                         ))}
                       </div>
@@ -430,10 +430,10 @@ const Feed = () => {
               );
             })}
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 12 }}>
-            <button onClick={() => { if (hasPrevPage) { fetchPosts(page - 1, 20); } }} disabled={!hasPrevPage}>Prev</button>
-            <span style={{ alignSelf: 'center' }}>Page {page} / {totalPages}</span>
-            <button onClick={() => { if (hasNextPage) { fetchPosts(page + 1, 20); } }} disabled={!hasNextPage}>Next</button>
+          <div className="pagination-container">
+            <button className="pagination-btn" onClick={() => { if (hasPrevPage) { fetchPosts(page - 1, 20); } }} disabled={!hasPrevPage}>Prev</button>
+            <span className="pagination-info">Page {page} / {totalPages}</span>
+            <button className="pagination-btn" onClick={() => { if (hasNextPage) { fetchPosts(page + 1, 20); } }} disabled={!hasNextPage}>Next</button>
           </div>
         </div>
 
