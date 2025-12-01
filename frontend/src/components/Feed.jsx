@@ -236,11 +236,13 @@ const Feed = () => {
               />
             </div>
 
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flex: 1 }}>
+            <div className="create-post-footer">
+              <label className="file-upload-btn">
+                📷 Add Photo
                 <input
                   type="file"
                   accept="image/*"
+                  style={{ display: 'none' }}
                   onChange={async (e) => {
                     const file = e.target.files && e.target.files[0];
                     if (!file) return;
@@ -262,10 +264,14 @@ const Feed = () => {
                     }
                   }}
                 />
-                <div style={{ flex: 1 }}>
-                  {uploading ? <span>Uploading {selectedFileName}...</span> : (newImageUrl ? <img src={newImageUrl} alt="preview" style={{ maxHeight: 80 }} /> : <span className="muted">No image selected</span>)}
+              </label>
+              {uploading && <span className="upload-status">Uploading {selectedFileName}...</span>}
+              {!uploading && newImageUrl && (
+                <div className="image-preview">
+                  <img src={newImageUrl} alt="preview" />
+                  <button className="remove-image-btn" onClick={() => { setNewImageUrl(''); setSelectedFileName(''); }}>✕</button>
                 </div>
-              </div>
+              )}
               <button
                 className="create-post-submit"
                 onClick={async () => {
