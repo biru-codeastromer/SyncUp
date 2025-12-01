@@ -1286,7 +1286,7 @@ body.dark-mode .header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
-.header-container { width: 100%; box-sizing: border-box; padding: 0; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+.header-container { width: 100%; box-sizing: border-box; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 72px; }
 .header-brand { flex-shrink: 0; }
 .brand-link { text-decoration: none; color: #1f2937; display: flex; align-items: center; gap: 12px; transition: transform 0.3s ease; }
 .brand-link:hover { transform: scale(1.02); }
@@ -1351,13 +1351,13 @@ body.dark-mode .nav-link:hover {
   color: #ffffff;
 }
 
-.header-auth { display: flex; gap: 12px; align-items: center; }
+.header-auth { display: flex; gap: 20px; align-items: center; }
 
 /* Header Dark Mode Toggle - Override for header placement */
 .header-auth .dark-mode-toggle {
   width: 80px;
   height: 40px;
-  margin-right: 12px;
+  margin-right: 0;
 }
 
 .header-auth .dark-mode-toggle::before {
@@ -3063,7 +3063,7 @@ body.dark-mode .events-empty {
   }
 
   /* header padding match mobile content padding */
-  .header-container { padding: 0; }
+  .header-container { padding: 0 16px; }
 
   /* allow the search to shrink on mobile */
   .header-center { margin: 0; padding-left: 12px; padding-right: 12px; }
